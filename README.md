@@ -22,6 +22,7 @@ git clone https://github.com/your-org/smart-orders.git
 cd smart-orders
 
 cp backend/.env.example backend/.env
+cp frontend/.env.example frontend/.env
 docker compose up --build
 
 
