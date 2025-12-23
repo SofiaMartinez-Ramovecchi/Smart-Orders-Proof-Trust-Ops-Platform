@@ -1,11 +1,18 @@
-FROM node:20-alpine
+FROM node:22-alpine
 
 WORKDIR /app
 
-COPY package.json ./
-RUN npm install
+# Instalar pnpm
+RUN npm install -g pnpm
 
+# Copiar manifests
+COPY package.json pnpm-lock.yaml ./
+
+# Instalar deps
+RUN pnpm install
+
+# Copiar el resto
 COPY . .
 
 EXPOSE 1234
-CMD ["npm", "run", "dev"]
+CMD ["pnpm", "dev"]
