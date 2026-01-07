@@ -1,0 +1,11 @@
+services:
+  anchor_env:
+    image: solanafoundation/anchor:v0.32.0
+    container_name: anchor_env
+    working_dir: /workspace
+    volumes:
+      - ./:/workspace
+    tty: true
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
