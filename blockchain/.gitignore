@@ -19,3 +19,8 @@ Thumbs.db
 # Environment
 .env
 .env.*
+
+# Lock files
+yarn.lock
+pnpm-lock.yaml
+package-lock.json
