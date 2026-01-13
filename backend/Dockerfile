@@ -2,14 +2,22 @@ FROM node:22-alpine
 
 WORKDIR /app
 
-COPY package.json package-lock.json ./
-RUN npm ci --omit=dev
+# Instalar pnpm
+RUN npm install -g pnpm
 
+# Copiar manifests
+COPY package.json pnpm-lock.yaml ./
+
+# Instalar dependencias (pnpm)
+RUN pnpm install --frozen-lockfile --prod
+
+# Copiar el resto del código
 COPY . .
 
-RUN npm run build
+# Build
+RUN pnpm run build
 
 EXPOSE 3000
-CMD ["npm", "run", "start:prod"]
 
+CMD ["pnpm", "run", "start:prod"]
 
