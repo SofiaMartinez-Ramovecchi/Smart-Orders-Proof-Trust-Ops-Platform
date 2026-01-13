@@ -7,7 +7,9 @@
   },
   "devDependencies": {
     "buffer": "^6.0.3",
-    "parcel": "^2.12.0"
+    "parcel": "^2.12.0",
+    "vite": "^5.x",
+    "@vitejs/plugin-react": "^4.x"
   },
   "dependencies": {
     "@solana/web3.js": "^1.95.0",
