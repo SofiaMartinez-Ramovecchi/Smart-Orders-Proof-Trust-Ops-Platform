@@ -6,10 +6,12 @@ async function bootstrap() {
   const app = await NestFactory.create(SolanaModule);
 
   app.enableCors({
-    origin: 'http://localhost:1234',
-    methods: 'GET,POST,PUT,DELETE',
-    credentials: true,
-  });
+  origin: [
+    'http://localhost:5173',
+    'https://smart-orders-proof-trust-ops-platfo.vercel.app/',
+  ],
+  credentials: true,
+});
 
   
   await app.listen(process.env.PORT ?? 3000); 
