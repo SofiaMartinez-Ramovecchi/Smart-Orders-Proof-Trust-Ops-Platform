@@ -1,9 +1,9 @@
 import { NestFactory } from '@nestjs/core';
-import { SolanaModule } from './solana/solana.module'
+import { LoginModule } from './solana/login.module'
 
 async function bootstrap() {
 
-  const app = await NestFactory.create(SolanaModule);
+  const app = await NestFactory.create(LoginModule);
 
   app.enableCors({
   origin: [

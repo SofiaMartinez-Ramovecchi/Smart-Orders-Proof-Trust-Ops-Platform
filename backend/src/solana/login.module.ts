@@ -8,4 +8,4 @@ import { LoginController } from "./login.controller";
     providers: []
 })
 
-export class SolanaModule {}
+export class LoginModule {}
