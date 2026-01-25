@@ -1,26 +1,34 @@
+import {
+  VerifySignatureInput,
+  SignatureService
+} from "@/signature/domain";
+import { JwtService, SignedJwt } from "@/jwt/domain";
+import { ChallengeService } from "@/challenge/domain";
 export class LoginService {
 
+  private readonly signatureService: SignatureService;
+  private readonly challengeService: ChallengeService;
+  private readonly jwtService: JwtService;
+
   constructor(
-    private readonly signatureService: {
-      verify(payload: any): boolean
-    },
-    private readonly jwtService: {
-      sign(payload: any): string
-    },
-  ) { }
+    signatureService: SignatureService,
+    challengeService: ChallengeService,
+    jwtService: JwtService) {
+    this.signatureService = signatureService;
+    this.challengeService = challengeService;
+    this.jwtService = jwtService;
+  }
+  async login(input: VerifySignatureInput): Promise<SignedJwt> {
+    const verified = await this.signatureService.verify(input);
 
-  login(payload: {
-    wallet: string
-    challenge: string
-    signature: string
-  }): string {
-    const isValid = this.signatureService.verify(payload)
-
-    if (!isValid) {
-      throw new Error('Invalid signature')
+    if (!verified.valid) {
+      throw new Error('Invalid signature');
     }
 
-    return this.jwtService.sign({ wallet: payload.wallet })
-  }
+    await this.challengeService.consume(input.message);
 
+    return this.jwtService.sign({
+      wallet: verified.signer,
+    });
+  }
 }
