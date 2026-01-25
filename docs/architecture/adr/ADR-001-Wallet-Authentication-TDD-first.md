@@ -90,13 +90,13 @@ JWTs represent **verified wallet ownership**, not persisted users.
 
 ### 2.1 JWT expectations
 
-* [ ] Define JWT payload shape (wallet only)
-* [ ] Define expiration policy (if any)
+* [x] Define JWT payload shape (wallet only)
+* [x] Define expiration policy (if any)
 
 ### 2.2 JWT usage tests (indirect)
 
-* [ ] Assert JWT is signed with `{ wallet }` payload
-* [ ] Assert JWT is not issued on invalid login
+* [x] Assert JWT is signed with `{ wallet }` payload
+* [x] Assert JWT is not issued on invalid login
 
 > No direct unit tests for external JWT library.
 
@@ -123,7 +123,7 @@ JWTs represent **verified wallet ownership**, not persisted users.
 ### 4.1 Service-level integration test
 
 * [ ] Instantiate real `SignatureService`
-* [ ] Use fake or stubbed JWT service
+* [x] Use fake or stubbed JWT service
 * [ ] Test full login flow end-to-end (no mocks)
 
 > Purpose: validate service wiring and real crypto interaction.

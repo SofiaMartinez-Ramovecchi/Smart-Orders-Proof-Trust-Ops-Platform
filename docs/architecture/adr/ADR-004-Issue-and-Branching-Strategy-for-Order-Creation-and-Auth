@@ -1,0 +1,64 @@
+# ADR-004: Issue, Branching and CI Strategy for Auth and Order Creation
+
+## Status
+Accepted
+
+## Context
+
+The issue "Backend: Order creation endpoint + serialization (TDD)" defines
+a core backend capability but spans multiple architectural layers and
+prerequisites.
+
+Authentication is a hard dependency for order creation, but must remain
+independent, testable, and evolvable on its own.
+
+To avoid mixed concerns, partial closures, and fragile integration,
+the work is decomposed into a hierarchy of issues that mirror architectural
+layers and development phases.
+
+This ADR documents:
+- the issue hierarchy
+- the branching strategy
+- and the CI/CD strategy used to protect completed auth features
+
+---
+
+## Decision
+
+Issues are used as architectural units, not as simple task lists.
+
+The original issue is treated as a long-lived epic.
+Implementation happens only in focused child and leaf issues.
+
+Authentication is implemented as a prerequisite subtree under the order epic.
+
+---
+
+## Issue Hierarchy
+
+### Epic (Root Issue)
+
+**Backend: Order creation endpoint + serialization (TDD)**
+
+Role:
+- Defines the long-term backend goal (order creation)
+- Links ADRs and architectural decisions
+- Acts as a coordination anchor
+
+Constraints:
+- Not expected to be fully implemented or closed directly
+- No direct development branches
+
+---
+
+### Parent Issue (Auth Coordination)
+
+**Backend: Auth login TDD (0 / 1)**
+
+Role:
+- Declares authentication as a prerequisite for order creation
+- Groups all auth-related work
+- Defines boundaries between layers
+
+This issue remains open until all auth sub-issues are completed.
+
