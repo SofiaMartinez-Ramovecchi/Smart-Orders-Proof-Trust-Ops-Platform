@@ -1,65 +1,87 @@
-import { describe, expect, test } from '@jest/globals';
 import { LoginService } from '@/auth/domain';
 
-describe('Login', () => {
-  it('accepts a valid signature', () => {
-    const signatureService = {
-      verify: jest.fn().mockReturnValue(true),
-    }
+describe('LoginService (unit)', () => {
+  let signatureService: any;
+  let challengeService: any;
+  let jwtService: any;
+  let loginService: LoginService;
 
-    const jwtService = {
-      sign: jest.fn().mockReturnValue('jwt-token'),
-    }
+  beforeEach(() => {
+    signatureService = {
+      verify: jest.fn(),
+    };
 
-    const login = new LoginService(signatureService as any, jwtService as any)
+    challengeService = {
+      consume: jest.fn(),
+    };
 
-    const result = login.login({
-      wallet: 'wallet',
-      challenge: 'challenge',
-      signature: 'valid',
+    jwtService = {
+      sign: jest.fn(),
+    };
+
+    loginService = new LoginService(
+      signatureService,
+      challengeService,
+      jwtService,
+    );
+  });
+
+  it('throws if signature is invalid', async () => {
+    signatureService.verify.mockResolvedValue({ valid: false });
+
+    await expect(
+      loginService.login({
+        message: 'challenge',
+        publicKey: 'wallet',
+        signature: 'bad',
+      }),
+    ).rejects.toThrow('Invalid signature');
+
+    expect(challengeService.consume).not.toHaveBeenCalled();
+    expect(jwtService.sign).not.toHaveBeenCalled();
+  });
+
+  it('consumes challenge and issues JWT when signature is valid', async () => {
+    signatureService.verify.mockResolvedValue({
+      valid: true,
+      signer: 'wallet-123',
     });
 
-    expect(result).toBe('jwt-token')
-  })
+    jwtService.sign.mockReturnValue('jwt-token');
 
-  it('rejects an invalid signature', () => {
-    const signatureService = {
-      verify: jest.fn().mockReturnValue(false),
-    }
+    const result = await loginService.login({
+      message: 'challenge',
+      publicKey: 'wallet-123',
+      signature: 'good',
+    });
 
-    const jwtService = {
-      sign: jest.fn(),
-    }
+    expect(challengeService.consume).toHaveBeenCalledWith('challenge');
+    expect(jwtService.sign).toHaveBeenCalledWith({
+      wallet: 'wallet-123',
+    });
 
-    const login = new LoginService(signatureService as any, jwtService as any)
+    expect(result).toBe('jwt-token');
+  });
 
-    expect(() =>
-      login.login({
-        wallet: 'wallet',
-        challenge: 'challenge',
-        signature: 'invalid',
+  it('does not issue JWT if challenge consumption fails', async () => {
+    signatureService.verify.mockResolvedValue({
+      valid: true,
+      signer: 'wallet-123',
+    });
+
+    challengeService.consume.mockRejectedValue(
+      new Error('Challenge already used'),
+    );
+
+    await expect(
+      loginService.login({
+        message: 'challenge',
+        publicKey: 'wallet-123',
+        signature: 'good',
       }),
-    ).toThrow()
-  })
+    ).rejects.toThrow('Challenge already used');
 
-  it('issues JWT only after successful verification', () => {
-    const signatureService = {
-      verify: jest.fn().mockReturnValue(true),
-    }
-
-    const jwtService = {
-      sign: jest.fn().mockReturnValue('jwt'),
-    }
-
-    const login = new LoginService(signatureService as any, jwtService as any)
-
-    login.login({
-      wallet: 'wallet',
-      challenge: 'challenge',
-      signature: 'valid',
-    })
-
-    expect(jwtService.sign).toHaveBeenCalledWith({ wallet: 'wallet' })
-  })
-})
+    expect(jwtService.sign).not.toHaveBeenCalled();
+  });
+});
 
