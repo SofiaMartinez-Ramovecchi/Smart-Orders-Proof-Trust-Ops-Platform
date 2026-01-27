@@ -1,0 +1,39 @@
+{
+  "service": "auth-service",
+  "version": "v1",
+  "description": "Wallet-based authentication via signature verification",
+  "endpoint": "/auth/login",
+  "method": "POST",
+  "request": {
+    "contentType": "application/json",
+    "body": {
+      "wallet": "string",
+      "message": "string",
+      "signature": "string"
+    }
+  },
+  "responses": {
+    "200": {
+      "description": "Valid signature, JWT issued",
+      "body": {
+        "token": "string",
+        "expiresAt": "string"
+      }
+    },
+    "401": {
+      "description": "Invalid signature",
+      "body": {
+        "error": {
+          "code": "INVALID_SIGNATURE",
+          "message": "Signature verification failed"
+        }
+      }
+    }
+  },
+  "notes": [
+    "This endpoint does not expose HATEOAS links",
+    "Identity resolution is responsibility of the gateway / identity layer",
+    "JWT payload contains wallet identifier only"
+  ]
+}
+
