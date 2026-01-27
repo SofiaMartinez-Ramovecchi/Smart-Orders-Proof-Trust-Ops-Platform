@@ -1,7 +1,7 @@
 # Auth Login — Architecture Logbook (Pre-Frontend)
 
 ## Context
-(qué estabas construyendo y por qué)
+I make http issue, when i finished controllers with tdd, I begin gateway proxy with caddy, my test gateway fail and I reflections about boundary and arch decisions.
 
 ## What I discovered
 - Identity ≠ Auth
@@ -15,7 +15,7 @@
 - Orders domain
 
 ## Current Architecture Snapshot
-(Auth / Gateway / Infra / Blockchain — como ya lo escribiste)
+(Auth / Gateway / Infra / Blockchain)
 
 ## Issue Breakdown & Rationale
 ISSUE 1 — Frontend
@@ -26,7 +26,7 @@ ISSUE 3 — Blockchain Auth
 (lista viva)
 
 ## PM / Engineering Reflection
-(esta parte es CLAVE: por qué no decidir ahora es una decisión)
+I get decision of focused me in login auth only, because I don't mix responsabilities, and finished one issue good before other issue or responsability.
 
 ## Next Revisit Points
 - After frontend
