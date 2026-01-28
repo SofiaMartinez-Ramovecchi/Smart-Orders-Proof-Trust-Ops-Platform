@@ -1,0 +1,55 @@
+{
+  # Opcional en local
+  auto_https off
+}
+
+:3000 {
+
+  # ---------- Security headers ----------
+  header {
+    X-Frame-Options "DENY"
+    X-Content-Type-Options "nosniff"
+    Referrer-Policy "no-referrer"
+    Content-Security-Policy "default-src 'self'"
+    X-Request-Id {http.request.id}
+    X-Request-Id {http.request.uuid}
+  }
+
+  # ---------- CORS ----------
+  header Access-Control-Allow-Origin  "*"
+  header Access-Control-Allow-Methods "GET, POST, OPTIONS"
+  header Access-Control-Allow-Headers "Content-Type, Authorization"
+
+  # ---------- Preflight ----------
+  @options {
+    method OPTIONS
+  }
+  respond @options 204
+
+  # ---------- Auth Service ----------
+  @auth {
+    path /auth/*
+  }
+
+  handle @auth {
+    header {
+      X-Request-Id {http.request.uuid}
+    }
+
+    reverse_proxy localhost:4000 {
+    header_up Authorization {http.request.header.Authorization}
+    header_up X-Request-Id {http.request.id}
+    header_up X-Request-Id {http.request.header.X-Request-Id}
+    }
+  }
+  # ---------- Identity (future) ----------
+  handle_path /identity/* {
+    reverse_proxy localhost:4001
+  }
+
+  # ---------- Orders (future) ----------
+  handle_path /orders/* {
+    reverse_proxy localhost:4002
+  }
+}
+

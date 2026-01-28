@@ -1,0 +1,1 @@
+export const SIGNATURE_SERVICE = Symbol('SIGNATURE_SERVICE');

@@ -1,0 +1,1 @@
+export const CHALLENGE_SERVICE = Symbol('CHELLENGE_SERVICE');

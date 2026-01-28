@@ -1,23 +1,25 @@
-import {
-  VerifySignatureInput,
-  SignatureService
-} from "@/signature/domain";
-import { JwtService, SignedJwt } from "@/jwt/domain";
-import { ChallengeService } from "@/challenge/domain";
+import { Inject } from '@nestjs/common';
+
+import type { SignatureService as SignatureServicePort } from '@/signature/domain';
+import type { ChallengeService as ChallengeServicePort } from '@/challenge/domain';
+import type { JwtService as JwtServicePort } from '@/jwt/domain';
+import { SignedJwt } from '@/jwt/domain';
+import { VerifySignatureInput } from '@/signature/domain';
+import { SIGNATURE_SERVICE } from '@/signature/domain';
+import { CHALLENGE_SERVICE } from '@/challenge/domain';
+import { JWT_SERVICE } from '@/jwt/domain';
+
 export class LoginService {
-
-  private readonly signatureService: SignatureService;
-  private readonly challengeService: ChallengeService;
-  private readonly jwtService: JwtService;
-
   constructor(
-    signatureService: SignatureService,
-    challengeService: ChallengeService,
-    jwtService: JwtService) {
-    this.signatureService = signatureService;
-    this.challengeService = challengeService;
-    this.jwtService = jwtService;
-  }
+    @Inject(SIGNATURE_SERVICE)
+    private readonly signatureService: SignatureServicePort,
+
+    @Inject(CHALLENGE_SERVICE)
+    private readonly challengeService: ChallengeServicePort,
+
+    @Inject(JWT_SERVICE)
+    private readonly jwtService: JwtServicePort,
+  ) { }
   async login(input: VerifySignatureInput): Promise<SignedJwt> {
     const verified = await this.signatureService.verify(input);
 

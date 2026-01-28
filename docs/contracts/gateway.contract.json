@@ -1,0 +1,97 @@
+{
+  "service": "api-gateway",
+  "version": "v1",
+  "description": "Public API gateway contract for authentication and identity",
+  "routes": {
+    "login": {
+      "endpoint": "/api/auth/login",
+      "method": "POST",
+      "forwardsTo": "auth-service:/auth/login",
+      "request": {
+        "contentType": "application/json",
+        "body": {
+          "wallet": "string",
+          "message": "string",
+          "signature": "string"
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Authenticated identity session created",
+          "body": {
+            "identity": {
+              "id": "string",
+              "type": "wallet"
+            },
+            "session": {
+              "token": "string",
+              "expiresAt": "string"
+            },
+            "_links": {
+              "self": {
+                "href": "/api/auth/login",
+                "method": "POST"
+              },
+              "me": {
+                "href": "/api/identity/me",
+                "method": "GET"
+              },
+              "logout": {
+                "href": "/api/auth/logout",
+                "method": "POST"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Authentication failed",
+          "body": {
+            "error": {
+              "code": "AUTH_FAILED",
+              "message": "Invalid wallet signature"
+            }
+          }
+        }
+      }
+    },
+
+    "identityMe": {
+      "endpoint": "/api/identity/me",
+      "method": "GET",
+      "description": "Resolve current authenticated identity",
+      "headers": {
+        "Authorization": "Bearer <jwt>"
+      },
+      "responses": {
+        "200": {
+          "body": {
+            "identity": {
+              "id": "string",
+              "type": "wallet",
+              "roles": ["string"]
+            },
+            "_links": {
+              "logout": {
+                "href": "/api/auth/logout",
+                "method": "POST"
+              },
+              "orders": {
+                "href": "/api/orders",
+                "method": "GET"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Unauthenticated"
+        }
+      }
+    }
+  },
+  "notes": [
+    "Frontend must not call internal services directly",
+    "All navigation must be driven by HATEOAS links",
+    "Gateway is responsible for shaping public responses"
+  ]
+}
+
