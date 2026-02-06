@@ -2,7 +2,7 @@
 import { Module } from '@nestjs/common';
 
 import { AuthController } from './http/auth.controller';
-import { LoginService } from './domain/login.service';
+import { LoginService } from './core/login/login.service';
 
 import { SignatureProvider } from '@/signature/signature.provider';
 import { ChallengeProvider } from '@/challenge/challenge.provider';
