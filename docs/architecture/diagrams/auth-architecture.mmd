@@ -1,0 +1,86 @@
+---
+config:
+  look: neo
+  theme: neo
+---
+flowchart LR
+    User((User))
+    Phantom[Phantom Wallet\nPrivate Key]
+    Frontend[Frontend App\nReact]
+    
+    Caddy[Caddy / Auth Infra\nRS256 Keys]
+    
+    Backend[Backend API\nNestJS]
+    AuthController[Auth Controller]
+    JwtGuard[JWT Auth Guard]
+    
+    SolanaRPC[Helius RPC\nSolana Network]
+
+    User --> Phantom
+    Phantom -->|Sign Challenge| Frontend
+    Frontend -->|POST /auth/login signed message| Backend
+
+    Backend --> AuthController
+    AuthController -->|Verify Signature| Backend
+    Backend -->|Issue JWT using RS256| Caddy
+    Caddy -->|Private Key| Backend
+
+    Backend -->|JWT| Frontend
+
+    Frontend -->|Authorization: Bearer JWT| Backend
+    Backend --> JwtGuard
+    JwtGuard -->|Verify JWT using Public Key| Caddy
+
+    Backend -->|Read/Write Transaction| SolanaRPC
+
+    subgraph Client["Client Trust Boundary"]
+        Phantom2[Phantom Wallet]
+        FE[Frontend]
+    end
+
+    subgraph AuthInfra["Auth / Infra Boundary"]
+        Caddy2[Caddy<br/>RS256 Keys]
+    end
+
+    subgraph BackendBoundary["Backend Trust Boundary"]
+        API[Backend API]
+        Guard[JWT Guard]
+    end
+
+    subgraph Blockchain["Blockchain Boundary"]
+        Solana[Solana Network<br/>Helius RPC]
+    end
+
+    Phantom2 --> FE
+    FE --> API
+    API --> Guard
+    Guard --> Caddy2
+    API --> Solana
+
+    subgraph HTTP["HTTP Layer"]
+        Controller[AuthController]
+        Guard2[JwtAuthGuard]
+    end
+
+    subgraph App["Application / Domain"]
+        LoginService[LoginService]
+        Identity[VerifiedIdentity]
+    end
+
+    subgraph Adapters["Providers / Adapters"]
+        PhantomStrategy[PhantomAuthStrategy]
+        JwtService[JwtService RS256]
+    end
+
+    subgraph Infra["Infrastructure"]
+        CaddyInfra[Caddy<br/>Keys]
+        Helius[Helius RPC]
+    end
+
+    Controller --> LoginService
+    LoginService --> PhantomStrategy
+    LoginService --> JwtService
+    JwtService --> CaddyInfra
+
+    Guard2 --> CaddyInfra
+    LoginService --> Identity
